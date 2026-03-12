@@ -1,7 +1,7 @@
 {
   "crons": [
     {
-      "path": "/api/cleanup?secret=cleanup-secret-key",
+      "path": "/api/cleanup",
       "schedule": "* * * * *"
     }
   ]
