@@ -19,18 +19,25 @@ export default async function PartidoPage({ params }) {
     matchId: params.id,
     status: { $nin: ['cancelled', 'expired'] },
   })
-    .select('playerName status createdAt')
+    .select('playerName status')
     .lean();
 
   const matchData = {
-    ...match,
     _id: match._id.toString(),
+    title: match.title,
     date: match.date.toISOString(),
+    time: match.time,
+    location: match.location || '',
+    maxSlots: match.maxSlots,
+    reservedSlots: match.reservedSlots,
+    pricePerSlot: match.pricePerSlot || 0,
+    paymentInfo: match.paymentInfo || '',
+    status: match.status,
     availableSlots: match.maxSlots - match.reservedSlots,
     reservations: reservations.map((r) => ({
-      ...r,
       _id: r._id.toString(),
-      matchId: r.matchId.toString(),
+      playerName: r.playerName,
+      status: r.status,
     })),
   };
 
