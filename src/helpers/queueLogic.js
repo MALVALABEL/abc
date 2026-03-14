@@ -1,5 +1,8 @@
 import QueueEntry from '@/models/QueueEntry';
-import { reserveSlot } from '@/helpers/reservationLogic';
+import Match from '@/models/Match';
+import Reservation from '@/models/Reservation';
+
+const RESERVATION_TTL_MS = 10 * 60 * 1000;
 
 export async function joinQueue(matchId, playerName, playerPhone, isGoalkeeper, userId) {
   const existing = await QueueEntry.findOne({
@@ -50,21 +53,32 @@ export async function processQueue(matchId) {
 
   if (!nextInQueue) return { processed: false };
 
-  const result = await reserveSlot(
-    matchId,
-    nextInQueue.playerName,
-    nextInQueue.playerPhone,
-    nextInQueue.isGoalkeeper,
-    nextInQueue.userId
+  const match = await Match.findOneAndUpdate(
+    {
+      _id: matchId,
+      status: 'open',
+      $expr: { $lt: ['$reservedSlots', '$maxSlots'] },
+    },
+    { $inc: { reservedSlots: 1 } },
+    { new: true }
   );
 
-  if (result.success) {
-    nextInQueue.status = 'reserved';
-    await nextInQueue.save();
-    return { processed: true, reservation: result.reservation, queueEntry: nextInQueue };
-  }
+  if (!match) return { processed: false };
 
-  return { processed: false };
+  const reservation = await Reservation.create({
+    matchId,
+    userId: nextInQueue.userId || null,
+    playerName: nextInQueue.playerName,
+    playerPhone: nextInQueue.playerPhone,
+    isGoalkeeper: nextInQueue.isGoalkeeper,
+    status: 'pending_payment',
+    expiresAt: new Date(Date.now() + RESERVATION_TTL_MS),
+  });
+
+  nextInQueue.status = 'reserved';
+  await nextInQueue.save();
+
+  return { processed: true, reservation, queueEntry: nextInQueue };
 }
 
 export async function cancelQueueEntry(entryId, phone) {

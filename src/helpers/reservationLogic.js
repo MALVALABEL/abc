@@ -1,6 +1,5 @@
 import Match from '@/models/Match';
 import Reservation from '@/models/Reservation';
-import { processQueue } from '@/helpers/queueLogic';
 import { debitWallet, requestRefund } from '@/helpers/walletLogic';
 
 const RESERVATION_TTL_MS = 10 * 60 * 1000;
@@ -88,7 +87,7 @@ export async function cancelReservation(reservationId) {
     await reservation.save();
     const match = await Match.findById(reservation.matchId);
     await requestRefund(reservation.userId, match.pricePerSlot, reservation.matchId, reservation._id);
-    return { success: true, refundRequested: true };
+    return { success: true, refundRequested: true, matchId: reservation.matchId };
   }
 
   reservation.status = 'cancelled';
@@ -97,10 +96,9 @@ export async function cancelReservation(reservationId) {
 
   if (shouldReleaseSlot) {
     await Match.findByIdAndUpdate(reservation.matchId, { $inc: { reservedSlots: -1 } });
-    await processQueue(reservation.matchId);
   }
 
-  return { success: true };
+  return { success: true, matchId: reservation.matchId };
 }
 
 export async function cleanupExpired() {
@@ -110,6 +108,7 @@ export async function cleanupExpired() {
   });
 
   let cleaned = 0;
+  const affectedMatches = new Set();
 
   for (const res of expired) {
     res.status = 'expired';
@@ -117,11 +116,11 @@ export async function cleanupExpired() {
     await res.save();
 
     await Match.findByIdAndUpdate(res.matchId, { $inc: { reservedSlots: -1 } });
-    await processQueue(res.matchId);
+    affectedMatches.add(res.matchId.toString());
     cleaned++;
   }
 
-  return { cleaned };
+  return { cleaned, affectedMatches: [...affectedMatches] };
 }
 
 export async function uploadReceipt(reservationId, receiptUrl) {
@@ -159,7 +158,6 @@ export async function rejectReservation(reservationId) {
   await reservation.save();
 
   await Match.findByIdAndUpdate(reservation.matchId, { $inc: { reservedSlots: -1 } });
-  await processQueue(reservation.matchId);
 
-  return { success: true };
+  return { success: true, matchId: reservation.matchId };
 }

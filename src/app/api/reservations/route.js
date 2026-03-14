@@ -1,12 +1,17 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongoose';
 import { reserveSlot, reserveWithWallet, cleanupExpired } from '@/helpers/reservationLogic';
+import { processQueue } from '@/helpers/queueLogic';
 import { validateName, validatePhone } from '@/helpers/validators';
 import { getUserIdFromRequest } from '@/helpers/userAuth';
 
 export async function POST(request) {
   await dbConnect();
-  await cleanupExpired();
+
+  const cleanupResult = await cleanupExpired();
+  for (const matchId of cleanupResult.affectedMatches) {
+    await processQueue(matchId);
+  }
 
   const { matchId, playerName, playerPhone, isGoalkeeper, payWithWallet } = await request.json();
 

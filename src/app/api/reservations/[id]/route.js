@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongoose';
 import Reservation from '@/models/Reservation';
 import { cancelReservation } from '@/helpers/reservationLogic';
+import { processQueue } from '@/helpers/queueLogic';
 
 export async function GET(request, { params }) {
   await dbConnect();
@@ -18,5 +19,10 @@ export async function DELETE(request, { params }) {
   if (!result.success) {
     return NextResponse.json({ error: result.error }, { status: 400 });
   }
+
+  if (result.matchId) {
+    await processQueue(result.matchId);
+  }
+
   return NextResponse.json({ message: 'Reserva cancelada' });
 }
