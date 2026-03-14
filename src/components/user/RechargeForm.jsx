@@ -26,7 +26,8 @@ export default function RechargeForm({ onComplete }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!amount || parseInt(amount) <= 0) {
+    const parsedAmount = parseInt(amount, 10);
+    if (!parsedAmount || parsedAmount <= 0) {
       setError('Ingresa un monto valido');
       return;
     }
@@ -37,7 +38,7 @@ export default function RechargeForm({ onComplete }) {
     setError(null);
     setLoading(true);
     try {
-      await requestRecharge(parseInt(amount), file);
+      await requestRecharge(parsedAmount, file);
       setSuccess(true);
       setTimeout(onComplete, 2000);
     } catch (err) {
@@ -59,15 +60,14 @@ export default function RechargeForm({ onComplete }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white rounded-2xl border border-gray-100 p-5 space-y-4">
+    <form onSubmit={handleSubmit} noValidate className="bg-white rounded-2xl border border-gray-100 p-5 space-y-4">
       <h3 className="font-semibold text-brand-600 text-sm">Recargar billetera</h3>
       <Input
         label="Monto a recargar (COP)"
-        type="number"
-        min="1000"
-        step="1000"
+        type="text"
+        inputMode="numeric"
         value={amount}
-        onChange={(e) => setAmount(e.target.value)}
+        onChange={(e) => setAmount(e.target.value.replace(/\D/g, ''))}
         placeholder="Ej: 50000"
       />
       <div>
