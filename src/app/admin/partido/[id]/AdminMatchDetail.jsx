@@ -4,6 +4,7 @@ import Link from 'next/link';
 import MatchHeader from '@/components/match/MatchHeader';
 import SlotCounter from '@/components/match/SlotCounter';
 import ReservationTable from '@/components/admin/ReservationTable';
+import ManualReservation from '@/components/admin/ManualReservation';
 import Spinner from '@/components/ui/Spinner';
 import { getMatch } from '@/services/matchService';
 
@@ -12,11 +13,13 @@ export default function AdminMatchDetail({ matchId }) {
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
 
-  useEffect(() => {
+  const fetchMatch = () => {
     getMatch(matchId)
       .then(setMatch)
       .finally(() => setLoading(false));
-  }, [matchId]);
+  };
+
+  useEffect(() => { fetchMatch(); }, [matchId]);
 
   if (loading) return <Spinner />;
   if (!match) return <p className="text-center text-gray-500">Partido no encontrado</p>;
@@ -50,6 +53,8 @@ export default function AdminMatchDetail({ matchId }) {
         <MatchHeader match={match} />
         <SlotCounter match={match} />
       </div>
+
+      <ManualReservation matchId={matchId} onCreated={fetchMatch} />
 
       <div className="bg-white rounded-2xl border border-gray-100 p-5 space-y-3">
         <p className="text-sm font-semibold text-brand-600">Compartir partido</p>
