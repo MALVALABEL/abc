@@ -1,32 +1,46 @@
 import Link from 'next/link';
-import { formatDate, formatTime, formatCurrency } from '@/helpers/formatters';
+import { formatTime, formatCurrency } from '@/helpers/formatters';
 
-export default function PublicMatchCard({ match }) {
+export default function PublicMatchCard({ match, isReserved }) {
   const isFull = match.availableSlots <= 0;
   const percentage = (match.reservedSlots / match.maxSlots) * 100;
 
   return (
     <Link
       href={`/partido/${match._id}`}
-      className="block bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden card-hover"
+      className={`block bg-white rounded-xl shadow-sm border overflow-hidden card-hover ${
+        isReserved ? 'border-emerald-200 ring-1 ring-emerald-100' : 'border-gray-100'
+      }`}
     >
+      {isReserved && (
+        <div className="bg-emerald-50 px-4 py-1.5 flex items-center gap-1.5">
+          <svg className="w-3.5 h-3.5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span className="text-xs font-bold text-emerald-700">Reservado</span>
+        </div>
+      )}
+
       <div className="p-5 space-y-3">
         <div className="flex justify-between items-start">
           <div className="space-y-1">
             <h4 className="font-bold text-brand-600">{match.title}</h4>
-            <div className="space-y-0.5">
-              <p className="text-sm text-gray-500 flex items-center gap-1.5">
-                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                {formatDate(match.date)}
-              </p>
-              <p className="text-sm text-gray-500 flex items-center gap-1.5">
+            <div className="flex items-center gap-3 text-sm text-gray-500">
+              <span className="flex items-center gap-1">
                 <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 {formatTime(match.time)}
-              </p>
+              </span>
+              {match.location && (
+                <span className="flex items-center gap-1">
+                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  {match.location}
+                </span>
+              )}
             </div>
           </div>
           {match.pricePerSlot > 0 && (
@@ -35,16 +49,6 @@ export default function PublicMatchCard({ match }) {
             </span>
           )}
         </div>
-
-        {match.location && (
-          <p className="text-xs text-gray-400 flex items-center gap-1">
-            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-            {match.location}
-          </p>
-        )}
 
         <div className="space-y-1.5">
           <div className="flex justify-between text-xs">
@@ -65,11 +69,13 @@ export default function PublicMatchCard({ match }) {
       </div>
 
       <div className={`px-5 py-2.5 text-center text-sm font-semibold ${
-        isFull
-          ? 'bg-gray-100 text-gray-400'
-          : 'gradient-accent text-white'
+        isReserved
+          ? 'bg-emerald-50 text-emerald-600'
+          : isFull
+            ? 'bg-gray-100 text-gray-400'
+            : 'gradient-accent text-white'
       }`}>
-        {isFull ? 'Sin cupos disponibles' : 'Reservar cupo'}
+        {isReserved ? 'Ver mi reserva' : isFull ? 'Sin cupos disponibles' : 'Reservar cupo'}
       </div>
     </Link>
   );
