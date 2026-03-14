@@ -32,7 +32,19 @@ export default function ReservationRow({ reservation, onUpdate }) {
               </span>
             </div>
             <div>
-              <p className="font-semibold text-gray-900 text-sm">{reservation.playerName}</p>
+              <div className="flex items-center gap-2">
+                <p className="font-semibold text-gray-900 text-sm">{reservation.playerName}</p>
+                {reservation.isGoalkeeper && (
+                  <span className="text-[10px] font-bold bg-violet-50 text-violet-600 px-1.5 py-0.5 rounded-full border border-violet-200">
+                    ARQUERO
+                  </span>
+                )}
+                {reservation.paidWithWallet && (
+                  <span className="text-[10px] font-bold bg-accent-50 text-accent-600 px-1.5 py-0.5 rounded-full border border-accent-200">
+                    BILLETERA
+                  </span>
+                )}
+              </div>
               <p className="text-xs text-gray-400">{reservation.playerPhone}</p>
             </div>
           </div>

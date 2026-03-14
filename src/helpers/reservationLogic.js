@@ -1,9 +1,11 @@
 import Match from '@/models/Match';
 import Reservation from '@/models/Reservation';
+import { processQueue } from '@/helpers/queueLogic';
+import { debitWallet, requestRefund } from '@/helpers/walletLogic';
 
 const RESERVATION_TTL_MS = 10 * 60 * 1000;
 
-export async function reserveSlot(matchId, playerName, playerPhone) {
+export async function reserveSlot(matchId, playerName, playerPhone, isGoalkeeper = false, userId = null) {
   const match = await Match.findOneAndUpdate(
     {
       _id: matchId,
@@ -20,11 +22,52 @@ export async function reserveSlot(matchId, playerName, playerPhone) {
 
   const reservation = await Reservation.create({
     matchId,
+    userId: userId || null,
     playerName: playerName.trim(),
     playerPhone: playerPhone.trim(),
+    isGoalkeeper,
     status: 'pending_payment',
     expiresAt: new Date(Date.now() + RESERVATION_TTL_MS),
   });
+
+  return { success: true, reservation };
+}
+
+export async function reserveWithWallet(matchId, userId, playerName, playerPhone, isGoalkeeper) {
+  const match = await Match.findOne({ _id: matchId, status: 'open' });
+  if (!match) return { success: false, error: 'Partido no encontrado' };
+  if (match.availableSlots <= 0) return { success: false, error: 'No hay cupos' };
+  if (!match.pricePerSlot) return { success: false, error: 'Este partido no tiene precio' };
+
+  const updated = await Match.findOneAndUpdate(
+    {
+      _id: matchId,
+      status: 'open',
+      $expr: { $lt: ['$reservedSlots', '$maxSlots'] },
+    },
+    { $inc: { reservedSlots: 1 } },
+    { new: true }
+  );
+
+  if (!updated) return { success: false, error: 'No hay cupos disponibles' };
+
+  const reservation = await Reservation.create({
+    matchId,
+    userId,
+    playerName: playerName.trim(),
+    playerPhone: playerPhone.trim(),
+    isGoalkeeper,
+    paidWithWallet: true,
+    status: 'confirmed',
+  });
+
+  const debit = await debitWallet(userId, match.pricePerSlot, matchId, reservation._id);
+  if (!debit.success) {
+    reservation.status = 'cancelled';
+    await reservation.save();
+    await Match.findByIdAndUpdate(matchId, { $inc: { reservedSlots: -1 } });
+    return { success: false, error: debit.error };
+  }
 
   return { success: true, reservation };
 }
@@ -37,18 +80,24 @@ export async function cancelReservation(reservationId) {
     return { success: false, error: 'Reserva ya fue cancelada o expirada' };
   }
 
-  const shouldReleaseSlot = ['pending_payment', 'payment_uploaded'].includes(
-    reservation.status
-  );
+  const shouldReleaseSlot = ['pending_payment', 'payment_uploaded'].includes(reservation.status);
+  const wasConfirmed = reservation.status === 'confirmed';
+
+  if (wasConfirmed && reservation.paidWithWallet && reservation.userId) {
+    reservation.status = 'refund_requested';
+    await reservation.save();
+    const match = await Match.findById(reservation.matchId);
+    await requestRefund(reservation.userId, match.pricePerSlot, reservation.matchId, reservation._id);
+    return { success: true, refundRequested: true };
+  }
 
   reservation.status = 'cancelled';
   reservation.expiresAt = null;
   await reservation.save();
 
   if (shouldReleaseSlot) {
-    await Match.findByIdAndUpdate(reservation.matchId, {
-      $inc: { reservedSlots: -1 },
-    });
+    await Match.findByIdAndUpdate(reservation.matchId, { $inc: { reservedSlots: -1 } });
+    await processQueue(reservation.matchId);
   }
 
   return { success: true };
@@ -67,9 +116,8 @@ export async function cleanupExpired() {
     res.expiresAt = null;
     await res.save();
 
-    await Match.findByIdAndUpdate(res.matchId, {
-      $inc: { reservedSlots: -1 },
-    });
+    await Match.findByIdAndUpdate(res.matchId, { $inc: { reservedSlots: -1 } });
+    await processQueue(res.matchId);
     cleaned++;
   }
 
@@ -110,9 +158,8 @@ export async function rejectReservation(reservationId) {
   reservation.status = 'rejected';
   await reservation.save();
 
-  await Match.findByIdAndUpdate(reservation.matchId, {
-    $inc: { reservedSlots: -1 },
-  });
+  await Match.findByIdAndUpdate(reservation.matchId, { $inc: { reservedSlots: -1 } });
+  await processQueue(reservation.matchId);
 
   return { success: true };
 }

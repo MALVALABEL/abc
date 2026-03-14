@@ -38,10 +38,15 @@ export default function useReservation(matchId) {
     }
   }, [storageKey, fetchReservation]);
 
-  const reserve = async (playerName, playerPhone) => {
+  const reserve = async (playerName, playerPhone, isGoalkeeper = false, payWithWallet = false) => {
     setError(null);
     try {
-      const data = await createReservation(matchId, { playerName, playerPhone });
+      const data = await createReservation(matchId, {
+        playerName,
+        playerPhone,
+        isGoalkeeper,
+        payWithWallet,
+      });
       localStorage.setItem(storageKey, data._id);
       setReservation(data);
       return data;
