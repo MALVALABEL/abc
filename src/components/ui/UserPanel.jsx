@@ -19,10 +19,11 @@ export default function UserPanel({ user, onLogout }) {
   }, [open]);
 
   const handleCancel = async (resId) => {
-    if (!confirm('Seguro que quieres cancelar esta reserva?')) return;
+    const reason = prompt('Motivo de cancelacion:');
+    if (!reason) return;
     setCancelling(resId);
     try {
-      await cancelReservation(resId);
+      await cancelReservation(resId, reason);
       setReservations((prev) => prev.filter((r) => r._id !== resId));
     } catch {}
     setCancelling(null);

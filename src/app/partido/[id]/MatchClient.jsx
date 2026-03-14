@@ -1,4 +1,5 @@
 'use client';
+import { useState, useEffect } from 'react';
 import useMatchData from '@/hooks/useMatchData';
 import useReservation from '@/hooks/useReservation';
 import useUser from '@/hooks/useUser';
@@ -25,6 +26,19 @@ export default function MatchClient({ initialMatch }) {
     refresh: refreshRes,
   } = useReservation(initialMatch._id);
 
+  const [cancelInfo, setCancelInfo] = useState({ count: 0, isFrequent: false });
+  const [cancelWarning, setCancelWarning] = useState(false);
+
+  useEffect(() => {
+    fetch('/api/users/me/cancellations')
+      .then((r) => r.json())
+      .then((data) => {
+        setCancelInfo(data);
+        setCancelWarning(data.isFrequent);
+      })
+      .catch(() => {});
+  }, []);
+
   if (!match) return <Spinner />;
 
   const handleReserve = async (name, phone, isGoalkeeper, payWithWallet) => {
@@ -32,8 +46,8 @@ export default function MatchClient({ initialMatch }) {
     if (result) refreshMatch();
   };
 
-  const handleCancel = async () => {
-    await cancel();
+  const handleCancel = async (reason, noRefund) => {
+    await cancel(reason, noRefund);
     refreshMatch();
   };
 
@@ -57,6 +71,17 @@ export default function MatchClient({ initialMatch }) {
           <SlotCounter match={match} />
         </div>
 
+        {cancelWarning && !reservation && !isFull && (
+          <div className="bg-amber-50 rounded-2xl border border-amber-200 p-4">
+            <p className="text-xs font-bold text-amber-700">
+              Has cancelado {cancelInfo.count} partidos este mes
+            </p>
+            <p className="text-xs text-amber-600 mt-1">
+              Si reservas y cancelas, no se te devolvera el dinero.
+            </p>
+          </div>
+        )}
+
         {resLoading ? (
           <Spinner size="sm" />
         ) : reservation ? (
@@ -66,6 +91,7 @@ export default function MatchClient({ initialMatch }) {
             onUpload={uploadReceipt}
             onCancel={handleCancel}
             onExpired={handleExpired}
+            noRefundWarning={cancelWarning}
           />
         ) : isFull ? (
           <>

@@ -29,7 +29,6 @@ export default function AdminTransactions() {
   return (
     <div className="space-y-4">
       <h2 className="text-lg font-bold text-brand-600">Transacciones de billeteras</h2>
-
       <div className="flex gap-2">
         {['pending', 'approved', 'rejected'].map((f) => (
           <button
@@ -43,9 +42,8 @@ export default function AdminTransactions() {
           </button>
         ))}
       </div>
-
       {transactions.length === 0 ? (
-        <p className="text-center text-gray-400 py-8">No hay transacciones {filter === 'pending' ? 'pendientes' : ''}</p>
+        <p className="text-center text-gray-400 py-8">Sin transacciones</p>
       ) : (
         <div className="space-y-3">
           {transactions.map((tx) => (
@@ -58,10 +56,8 @@ export default function AdminTransactions() {
 }
 
 function TransactionCard({ tx, onAction }) {
-  const typeLabels = {
-    recharge: 'Recarga',
-    refund_request: 'Devolucion',
-  };
+  const isRefund = tx.type === 'refund_request';
+  const typeLabel = isRefund ? 'Devolucion' : 'Recarga';
 
   return (
     <div className="bg-white rounded-xl border border-gray-100 p-4 space-y-3">
@@ -71,11 +67,41 @@ function TransactionCard({ tx, onAction }) {
             {tx.userId?.name || 'Usuario'} - {tx.userId?.phone}
           </p>
           <p className="text-xs text-gray-400">
-            {typeLabels[tx.type] || tx.type} - {new Date(tx.createdAt).toLocaleDateString('es-CO')}
+            {typeLabel} - {new Date(tx.createdAt).toLocaleDateString('es-CO')}
           </p>
         </div>
         <p className="font-bold text-accent-600">${tx.amount?.toLocaleString('es-CO')}</p>
       </div>
+
+      {isRefund && (
+        <div className="bg-gray-50 rounded-lg p-3 space-y-1.5">
+          {tx.matchTitle && (
+            <p className="text-xs text-gray-700">
+              Partido: <span className="font-semibold">{tx.matchTitle}</span>
+            </p>
+          )}
+          {tx.hoursUntilMatch !== undefined && (
+            <p className="text-xs text-gray-500">
+              Tiempo para el partido:{' '}
+              <span className={`font-semibold ${tx.hoursUntilMatch < 24 ? 'text-red-600' : 'text-gray-700'}`}>
+                {tx.hoursUntilMatch > 0 ? `${tx.hoursUntilMatch}h` : 'Ya paso'}
+              </span>
+            </p>
+          )}
+          {tx.cancelReason && (
+            <p className="text-xs text-gray-500">
+              Motivo: <span className="text-gray-700">{tx.cancelReason}</span>
+            </p>
+          )}
+          <p className="text-xs text-gray-500">
+            Cancelaciones este mes:{' '}
+            <span className={`font-bold ${tx.userCancelCount >= 3 ? 'text-red-600' : 'text-gray-700'}`}>
+              {tx.userCancelCount || 0}
+              {tx.userCancelCount >= 3 && ' - REINCIDENTE'}
+            </span>
+          </p>
+        </div>
+      )}
 
       {tx.receiptUrl && (
         <a href={tx.receiptUrl} target="_blank" rel="noopener noreferrer">

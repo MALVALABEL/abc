@@ -15,8 +15,12 @@ export async function getReservation(id) {
   return res.json();
 }
 
-export async function cancelReservation(id) {
-  const res = await fetch(`/api/reservations/${id}`, { method: 'DELETE' });
+export async function cancelReservation(id, cancelReason = null, noRefund = false) {
+  const res = await fetch(`/api/reservations/${id}`, {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ cancelReason, noRefund }),
+  });
   if (!res.ok) {
     const json = await res.json();
     throw new Error(json.error || 'Error al cancelar');

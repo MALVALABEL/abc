@@ -56,10 +56,10 @@ export default function useReservation(matchId) {
     }
   };
 
-  const cancel = async () => {
+  const cancel = async (cancelReason = null, noRefund = false) => {
     if (!reservation) return;
     try {
-      await cancelApi(reservation._id);
+      await cancelApi(reservation._id, cancelReason, noRefund);
       localStorage.removeItem(storageKey);
       setReservation(null);
     } catch (err) {

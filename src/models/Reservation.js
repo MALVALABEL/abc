@@ -16,6 +16,8 @@ const reservationSchema = new mongoose.Schema(
     playerPhone: { type: String, required: true },
     isGoalkeeper: { type: Boolean, default: false },
     paidWithWallet: { type: Boolean, default: false },
+    cancelReason: { type: String, default: null },
+    noRefund: { type: Boolean, default: false },
     status: {
       type: String,
       enum: [
