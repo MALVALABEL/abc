@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Spinner from '@/components/ui/Spinner';
+import AccountingDetails from './AccountingDetails';
 
 function fmt(n) {
   return '$' + (n || 0).toLocaleString('es-CO');
@@ -9,6 +10,7 @@ function fmt(n) {
 export default function AdminAccounting() {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [detail, setDetail] = useState(null);
 
   useEffect(() => {
     fetch('/api/admin/stats')
@@ -26,16 +28,24 @@ export default function AdminAccounting() {
 
       <Section title="Ingresos" color="emerald">
         <StatRow label="Recargas aprobadas" value={fmt(stats.ingresos.recargas)} sub={`${stats.ingresos.recargasCount} recargas`} />
+        <ViewMore onClick={() => setDetail(detail === 'recharges' ? null : 'recharges')} active={detail === 'recharges'} />
+        {detail === 'recharges' && <AccountingDetails type="recharges" />}
         <StatRow label="Pagos por transferencia directa" value={`${stats.ingresos.transferencias} reservas`} />
+        <ViewMore onClick={() => setDetail(detail === 'transfers' ? null : 'transfers')} active={detail === 'transfers'} />
+        {detail === 'transfers' && <AccountingDetails type="transfers" />}
       </Section>
 
       <Section title="Billeteras de usuarios" color="accent">
         <StatRow label="Saldo total acumulado" value={fmt(stats.billeteras.saldoTotal)} sub={`${stats.billeteras.usuariosConSaldo} usuarios con saldo`} />
         <StatRow label="Debitos por reservas" value={fmt(stats.billeteras.debitosPorReserva)} sub={`${stats.billeteras.debitosCount} pagos con billetera`} />
+        <ViewMore onClick={() => setDetail(detail === 'debits' ? null : 'debits')} active={detail === 'debits'} />
+        {detail === 'debits' && <AccountingDetails type="debits" />}
       </Section>
 
       <Section title="Devoluciones" color="violet">
-        <StatRow label="Devoluciones aprobadas" value={fmt(stats.devoluciones.aprobadas)} sub={`${stats.devoluciones.aprobadasCount} devoluciones`} />
+        <StatRow label="Devoluciones procesadas" value={fmt(stats.devoluciones.aprobadas)} sub={`${stats.devoluciones.aprobadasCount} devoluciones`} />
+        <ViewMore onClick={() => setDetail(detail === 'refunds' ? null : 'refunds')} active={detail === 'refunds'} />
+        {detail === 'refunds' && <AccountingDetails type="refunds" />}
         <StatRow label="Devoluciones pendientes" value={fmt(stats.devoluciones.pendientes)} sub={`${stats.devoluciones.pendientesCount} por aprobar`} highlight />
       </Section>
 
@@ -59,29 +69,27 @@ export default function AdminAccounting() {
           {fmt(stats.ingresos.recargas - stats.devoluciones.aprobadas)}
         </p>
         <p className="text-xs text-brand-500 mt-1">
-          Recargas aprobadas ({fmt(stats.ingresos.recargas)}) - Devoluciones ({fmt(stats.devoluciones.aprobadas)})
+          Recargas ({fmt(stats.ingresos.recargas)}) - Devoluciones ({fmt(stats.devoluciones.aprobadas)})
         </p>
       </div>
     </div>
   );
 }
 
-function Section({ title, color, children }) {
-  const colors = {
-    emerald: 'border-emerald-100',
-    accent: 'border-accent-100',
-    violet: 'border-violet-100',
-    amber: 'border-amber-100',
-    brand: 'border-brand-100',
-  };
-  const titleColors = {
-    emerald: 'text-emerald-700',
-    accent: 'text-accent-700',
-    violet: 'text-violet-700',
-    amber: 'text-amber-700',
-    brand: 'text-brand-700',
-  };
+function ViewMore({ onClick, active }) {
+  return (
+    <button onClick={onClick} className="text-xs text-brand-500 hover:text-brand-600 font-medium flex items-center gap-1 py-1">
+      <svg className={`w-3 h-3 transition-transform ${active ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+      </svg>
+      {active ? 'Ocultar detalle' : 'Ver detalle'}
+    </button>
+  );
+}
 
+function Section({ title, color, children }) {
+  const colors = { emerald: 'border-emerald-100', accent: 'border-accent-100', violet: 'border-violet-100', amber: 'border-amber-100', brand: 'border-brand-100' };
+  const titleColors = { emerald: 'text-emerald-700', accent: 'text-accent-700', violet: 'text-violet-700', amber: 'text-amber-700', brand: 'text-brand-700' };
   return (
     <div className={`bg-white rounded-2xl border ${colors[color]} p-5 space-y-3`}>
       <h3 className={`font-semibold text-sm ${titleColors[color]}`}>{title}</h3>
@@ -97,9 +105,7 @@ function StatRow({ label, value, sub, highlight }) {
         <p className="text-sm text-gray-700">{label}</p>
         {sub && <p className="text-[10px] text-gray-400">{sub}</p>}
       </div>
-      <p className={`text-sm font-bold ${highlight ? 'text-amber-600' : 'text-gray-900'}`}>
-        {value}
-      </p>
+      <p className={`text-sm font-bold ${highlight ? 'text-amber-600' : 'text-gray-900'}`}>{value}</p>
     </div>
   );
 }
