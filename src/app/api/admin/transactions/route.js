@@ -41,7 +41,7 @@ export async function GET(request) {
           const [h, m] = (match.time || '0:0').split(':');
           matchDateTime.setHours(parseInt(h), parseInt(m));
           const diff = matchDateTime - new Date();
-          result.hoursUntilMatch = Math.max(0, Math.round(diff / 3600000));
+          result.minutesUntilMatch = Math.max(0, Math.round(diff / 60000));
         }
       }
 

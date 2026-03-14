@@ -55,6 +55,18 @@ export default function AdminTransactions() {
   );
 }
 
+function formatTimeRemaining(totalMinutes) {
+  if (totalMinutes <= 0) return 'Ya paso';
+  const days = Math.floor(totalMinutes / 1440);
+  const hours = Math.floor((totalMinutes % 1440) / 60);
+  const mins = totalMinutes % 60;
+  const parts = [];
+  if (days > 0) parts.push(`${days}d`);
+  if (hours > 0) parts.push(`${hours}h`);
+  if (mins > 0 || parts.length === 0) parts.push(`${mins}min`);
+  return parts.join(' ');
+}
+
 function TransactionCard({ tx, onAction }) {
   const isRefund = tx.type === 'refund_request';
   const typeLabel = isRefund ? 'Devolucion' : 'Recarga';
@@ -80,11 +92,11 @@ function TransactionCard({ tx, onAction }) {
               Partido: <span className="font-semibold">{tx.matchTitle}</span>
             </p>
           )}
-          {tx.hoursUntilMatch !== undefined && (
+          {tx.minutesUntilMatch !== undefined && (
             <p className="text-xs text-gray-500">
-              Tiempo para el partido:{' '}
-              <span className={`font-semibold ${tx.hoursUntilMatch < 24 ? 'text-red-600' : 'text-gray-700'}`}>
-                {tx.hoursUntilMatch > 0 ? `${tx.hoursUntilMatch}h` : 'Ya paso'}
+              Tiempo faltante:{' '}
+              <span className={`font-semibold ${tx.minutesUntilMatch < 1440 ? 'text-red-600' : 'text-gray-700'}`}>
+                {formatTimeRemaining(tx.minutesUntilMatch)}
               </span>
             </p>
           )}
