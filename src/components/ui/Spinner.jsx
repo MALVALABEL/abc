@@ -3,7 +3,7 @@ export default function Spinner({ size = 'md' }) {
   return (
     <div className="flex justify-center py-8">
       <svg
-        className={`animate-spin ${sizes[size]} text-green-600`}
+        className={`animate-spin ${sizes[size]} text-brand-500`}
         viewBox="0 0 24 24"
         fill="none"
       >

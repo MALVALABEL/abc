@@ -36,29 +36,64 @@ export default function CreateMatchForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <Input label="Titulo del partido" value={form.title} onChange={update('title')} placeholder="Ej: Partido Viernes" required />
-      <div className="grid grid-cols-2 gap-3">
-        <Input label="Fecha" type="date" value={form.date} onChange={update('date')} required />
-        <Input label="Hora" type="time" value={form.time} onChange={update('time')} required />
+    <div className="max-w-lg mx-auto">
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+        <h2 className="text-lg font-bold text-brand-600 mb-5">Crear nuevo partido</h2>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <Input
+            label="Titulo del partido"
+            value={form.title}
+            onChange={update('title')}
+            placeholder="Ej: Partido Viernes"
+            required
+          />
+          <div className="grid grid-cols-2 gap-3">
+            <Input label="Fecha" type="date" value={form.date} onChange={update('date')} required />
+            <Input label="Hora" type="time" value={form.time} onChange={update('time')} required />
+          </div>
+          <Input
+            label="Ubicacion"
+            value={form.location}
+            onChange={update('location')}
+            placeholder="Ej: Cancha El Estadio"
+          />
+          <div className="grid grid-cols-2 gap-3">
+            <Input
+              label="Cupos maximos"
+              type="number"
+              min="2"
+              value={form.maxSlots}
+              onChange={update('maxSlots')}
+              required
+            />
+            <Input
+              label="Precio por cupo (COP)"
+              type="number"
+              min="0"
+              value={form.pricePerSlot}
+              onChange={update('pricePerSlot')}
+            />
+          </div>
+          <div className="space-y-1.5">
+            <label className="block text-sm font-medium text-gray-700">
+              Datos de pago (cuenta, Nequi, etc.)
+            </label>
+            <textarea
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent transition-all duration-200"
+              rows={3}
+              value={form.paymentInfo}
+              onChange={update('paymentInfo')}
+              placeholder="Ej: Nequi 300-123-4567 a nombre de Juan"
+            />
+          </div>
+          {error && (
+            <p className="text-sm text-red-500 bg-red-50 p-3 rounded-xl">{error}</p>
+          )}
+          <Button type="submit" variant="brand" loading={loading}>
+            Crear partido
+          </Button>
+        </form>
       </div>
-      <Input label="Ubicacion" value={form.location} onChange={update('location')} placeholder="Ej: Cancha El Estadio" />
-      <div className="grid grid-cols-2 gap-3">
-        <Input label="Cupos maximos" type="number" min="2" value={form.maxSlots} onChange={update('maxSlots')} required />
-        <Input label="Precio por cupo (COP)" type="number" min="0" value={form.pricePerSlot} onChange={update('pricePerSlot')} />
-      </div>
-      <div className="space-y-1">
-        <label className="block text-sm font-medium text-gray-700">Datos de pago (cuenta, Nequi, etc.)</label>
-        <textarea
-          className="w-full px-3 py-3 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-          rows={3}
-          value={form.paymentInfo}
-          onChange={update('paymentInfo')}
-          placeholder="Ej: Nequi 300-123-4567 a nombre de Juan"
-        />
-      </div>
-      {error && <p className="text-sm text-red-500">{error}</p>}
-      <Button type="submit" loading={loading}>Crear partido</Button>
-    </form>
+    </div>
   );
 }

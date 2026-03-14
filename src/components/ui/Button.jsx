@@ -1,8 +1,10 @@
 const variants = {
-  primary: 'bg-green-600 hover:bg-green-700 text-white',
+  primary: 'gradient-accent text-white hover:opacity-90',
+  brand: 'bg-brand-600 hover:bg-brand-700 text-white',
   danger: 'bg-red-500 hover:bg-red-600 text-white',
-  secondary: 'bg-gray-200 hover:bg-gray-300 text-gray-800',
-  outline: 'border-2 border-green-600 text-green-600 hover:bg-green-50',
+  secondary: 'bg-gray-100 hover:bg-gray-200 text-gray-700',
+  outline: 'border-2 border-brand-600 text-brand-600 hover:bg-brand-50',
+  ghost: 'text-brand-600 hover:bg-brand-50',
 };
 
 export default function Button({
@@ -16,8 +18,8 @@ export default function Button({
   return (
     <button
       className={`
-        px-4 py-3 rounded-lg font-semibold text-sm
-        transition-colors duration-200
+        px-4 py-3 rounded-xl font-semibold text-sm
+        transition-all duration-200
         disabled:opacity-50 disabled:cursor-not-allowed
         w-full ${variants[variant]} ${className}
       `}

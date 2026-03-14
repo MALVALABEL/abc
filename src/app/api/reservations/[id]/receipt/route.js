@@ -1,8 +1,7 @@
 import { NextResponse } from 'next/server';
-import { writeFile } from 'fs/promises';
-import path from 'path';
 import dbConnect from '@/lib/mongoose';
 import { uploadReceipt } from '@/helpers/reservationLogic';
+import { uploadToR2 } from '@/lib/r2';
 
 export async function POST(request, { params }) {
   await dbConnect();
@@ -18,12 +17,9 @@ export async function POST(request, { params }) {
   const buffer = Buffer.from(bytes);
 
   const ext = file.name.split('.').pop();
-  const filename = `${params.id}_${Date.now()}.${ext}`;
-  const uploadPath = path.join(process.cwd(), 'public', 'uploads', filename);
+  const filename = `receipts/${params.id}_${Date.now()}.${ext}`;
 
-  await writeFile(uploadPath, buffer);
-
-  const receiptUrl = `/uploads/${filename}`;
+  const receiptUrl = await uploadToR2(buffer, filename, file.type);
   const result = await uploadReceipt(params.id, receiptUrl);
 
   if (!result.success) {

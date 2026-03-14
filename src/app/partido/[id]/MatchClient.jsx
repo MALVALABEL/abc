@@ -1,6 +1,7 @@
 'use client';
 import useMatchData from '@/hooks/useMatchData';
 import useReservation from '@/hooks/useReservation';
+import Header from '@/components/ui/Header';
 import MatchHeader from '@/components/match/MatchHeader';
 import SlotCounter from '@/components/match/SlotCounter';
 import ReservationForm from '@/components/match/ReservationForm';
@@ -41,10 +42,13 @@ export default function MatchClient({ initialMatch }) {
   const isFull = match.availableSlots <= 0;
 
   return (
-    <div className="min-h-screen bg-gray-50 py-6 px-4">
-      <div className="max-w-md mx-auto space-y-6">
-        <MatchHeader match={match} />
-        <SlotCounter match={match} />
+    <div className="min-h-screen bg-gray-50">
+      <Header />
+      <div className="max-w-md mx-auto px-4 py-6 space-y-5">
+        <div className="bg-white rounded-2xl border border-gray-100 p-6 space-y-5">
+          <MatchHeader match={match} />
+          <SlotCounter match={match} />
+        </div>
 
         {resLoading ? (
           <Spinner size="sm" />
@@ -59,14 +63,14 @@ export default function MatchClient({ initialMatch }) {
         ) : isFull ? (
           <MatchClosed />
         ) : (
-          <>
+          <div className="bg-white rounded-2xl border border-gray-100 p-6 space-y-5">
             <PaymentInfo match={match} />
             <ReservationForm onReserve={handleReserve} />
-          </>
+          </div>
         )}
 
         {error && (
-          <p className="text-center text-sm text-red-500 bg-red-50 p-3 rounded-lg">
+          <p className="text-center text-sm text-red-500 bg-red-50 p-3 rounded-xl">
             {error}
           </p>
         )}

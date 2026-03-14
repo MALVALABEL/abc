@@ -16,7 +16,7 @@ export default function CancelButton({ onCancel }) {
     return (
       <button
         onClick={() => setConfirming(true)}
-        className="text-sm text-red-500 underline hover:text-red-700"
+        className="text-sm text-red-400 underline hover:text-red-600 transition-colors"
       >
         Cancelar reserva
       </button>
@@ -24,7 +24,7 @@ export default function CancelButton({ onCancel }) {
   }
 
   return (
-    <div className="space-y-2 p-3 bg-red-50 rounded-lg">
+    <div className="space-y-2 p-4 bg-red-50 rounded-xl border border-red-100">
       <p className="text-sm text-red-700">Seguro que quieres cancelar? Tu cupo se liberara.</p>
       <div className="flex gap-2">
         <Button variant="danger" onClick={handleCancel} loading={loading}>

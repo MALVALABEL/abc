@@ -28,6 +28,7 @@ export default function ReservationForm({ onReserve, disabled }) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      <h3 className="font-semibold text-brand-600 text-sm">Reserva tu cupo</h3>
       <Input
         label="Tu nombre"
         placeholder="Ej: Juan Perez"
