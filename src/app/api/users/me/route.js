@@ -25,12 +25,14 @@ export async function PUT(request) {
     return NextResponse.json({ error: 'No autenticado' }, { status: 401 });
   }
 
-  const { preferredDays, preferredTime, isGoalkeeper } = await request.json();
-
+  const data = await request.json();
   const update = {};
-  if (preferredDays) update.preferredDays = preferredDays;
-  if (preferredTime !== undefined) update.preferredTime = preferredTime;
-  if (isGoalkeeper !== undefined) update.isGoalkeeper = isGoalkeeper;
+
+  if (data.preferredDays) update.preferredDays = data.preferredDays;
+  if (data.anyTime !== undefined) update.anyTime = data.anyTime;
+  if (data.preferredTimeFrom !== undefined) update.preferredTimeFrom = data.preferredTimeFrom;
+  if (data.preferredTimeTo !== undefined) update.preferredTimeTo = data.preferredTimeTo;
+  if (data.isGoalkeeper !== undefined) update.isGoalkeeper = data.isGoalkeeper;
 
   const user = await User.findByIdAndUpdate(userId, update, { new: true }).select('-password');
 
