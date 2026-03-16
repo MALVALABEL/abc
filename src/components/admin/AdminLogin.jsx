@@ -5,6 +5,7 @@ import Input from '@/components/ui/Input';
 import { login } from '@/services/adminService';
 
 export default function AdminLogin({ onSuccess }) {
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -14,10 +15,10 @@ export default function AdminLogin({ onSuccess }) {
     setError(null);
     setLoading(true);
     try {
-      await login(password);
-      onSuccess();
-    } catch {
-      setError('Password incorrecto');
+      const data = await login(username, password);
+      onSuccess(data.role);
+    } catch (err) {
+      setError(err.message);
     }
     setLoading(false);
   };
@@ -38,13 +39,19 @@ export default function AdminLogin({ onSuccess }) {
         </div>
         <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 space-y-4">
           <Input
+            label="Usuario"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            placeholder="Ingresa tu usuario"
+          />
+          <Input
             label="Contrasena"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            error={error}
             placeholder="Ingresa la contrasena"
           />
+          {error && <p className="text-sm text-red-500">{error}</p>}
           <Button type="submit" variant="brand" loading={loading}>
             Ingresar
           </Button>

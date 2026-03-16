@@ -1,17 +1,28 @@
 import { NextResponse } from 'next/server';
-import { generateToken } from '@/helpers/auth';
+import dbConnect from '@/lib/mongoose';
+import { loginAdmin } from '@/helpers/auth';
 
 export async function POST(request) {
-  const { password } = await request.json();
+  await dbConnect();
+  const { username, password } = await request.json();
 
-  if (password !== process.env.ADMIN_PASSWORD) {
-    return NextResponse.json({ error: 'Password incorrecto' }, { status: 401 });
+  if (!username || !password) {
+    return NextResponse.json({ error: 'Usuario y contrasena requeridos' }, { status: 400 });
   }
 
-  const token = generateToken();
+  const result = await loginAdmin(username, password);
 
-  const response = NextResponse.json({ success: true });
-  response.cookies.set('admin_token', token, {
+  if (!result.success) {
+    return NextResponse.json({ error: result.error }, { status: 401 });
+  }
+
+  const response = NextResponse.json({
+    success: true,
+    role: result.admin.role,
+    name: result.admin.name,
+  });
+
+  response.cookies.set('admin_token', result.token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
