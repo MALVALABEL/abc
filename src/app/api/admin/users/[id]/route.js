@@ -1,20 +1,39 @@
 import { NextResponse } from 'next/server';
+import bcrypt from 'bcryptjs';
 import dbConnect from '@/lib/mongoose';
 import Admin from '@/models/Admin';
-import { isSuperAdmin } from '@/helpers/auth';
+import { isAdmin, isSuperAdmin, getAdminFromRequest } from '@/helpers/auth';
 
 export async function PUT(request, { params }) {
   await dbConnect();
-  if (!isSuperAdmin(request)) {
-    return NextResponse.json({ error: 'Solo superadmin' }, { status: 403 });
+  if (!isAdmin(request)) {
+    return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
   }
 
-  const { active } = await request.json();
-  const admin = await Admin.findByIdAndUpdate(
-    params.id,
-    { active },
-    { new: true }
-  ).select('-password');
+  const data = await request.json();
+  const update = {};
+
+  if (data.active !== undefined && isSuperAdmin(request)) {
+    update.active = data.active;
+  }
+
+  if (data.newPassword) {
+    const caller = getAdminFromRequest(request);
+    const isSelf = caller?.adminId === params.id;
+    const isSA = caller?.role === 'superadmin';
+
+    if (!isSelf && !isSA) {
+      return NextResponse.json({ error: 'Solo puedes cambiar tu propia contrasena' }, { status: 403 });
+    }
+
+    update.password = await bcrypt.hash(data.newPassword, 10);
+  }
+
+  if (Object.keys(update).length === 0) {
+    return NextResponse.json({ error: 'Nada que actualizar' }, { status: 400 });
+  }
+
+  const admin = await Admin.findByIdAndUpdate(params.id, update, { new: true }).select('-password');
 
   if (!admin) {
     return NextResponse.json({ error: 'Admin no encontrado' }, { status: 404 });
@@ -25,8 +44,8 @@ export async function PUT(request, { params }) {
 
 export async function DELETE(request, { params }) {
   await dbConnect();
-  if (!isSuperAdmin(request)) {
-    return NextResponse.json({ error: 'Solo superadmin' }, { status: 403 });
+  if (!isAdmin(request)) {
+    return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
   }
 
   const admin = await Admin.findById(params.id);

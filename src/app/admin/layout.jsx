@@ -69,9 +69,29 @@ export default function AdminLayout({ children }) {
               </p>
             </div>
           </div>
-          <button onClick={handleLogout} className="text-xs text-white/60 hover:text-white transition-colors">
-            Cerrar sesion
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => {
+                const newPass = prompt('Nueva contrasena:');
+                if (!newPass || newPass.length < 4) { if (newPass !== null) alert('Minimo 4 caracteres'); return; }
+                try {
+                  const token = document.cookie.split('admin_token=')[1]?.split(';')[0];
+                  const payload = JSON.parse(atob(token.split('.')[1]));
+                  fetch(`/api/admin/users/${payload.adminId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ newPassword: newPass }),
+                  }).then((r) => r.ok ? alert('Contrasena actualizada') : alert('Error'));
+                } catch { alert('Error'); }
+              }}
+              className="text-xs text-white/60 hover:text-white transition-colors"
+            >
+              Cambiar clave
+            </button>
+            <button onClick={handleLogout} className="text-xs text-white/60 hover:text-white transition-colors">
+              Cerrar sesion
+            </button>
+          </div>
         </div>
       </header>
 
