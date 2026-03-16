@@ -8,7 +8,7 @@ export default function AdminManagement() {
   const [admins, setAdmins] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState({ username: '', password: '', name: '', role: 'admin' });
+  const [form, setForm] = useState({ username: '', password: '', name: '' });
   const [error, setError] = useState(null);
   const [saving, setSaving] = useState(false);
 
@@ -35,7 +35,7 @@ export default function AdminManagement() {
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error);
-      setForm({ username: '', password: '', name: '', role: 'admin' });
+      setForm({ username: '', password: '', name: '' });
       setShowForm(false);
       fetchAdmins();
     } catch (err) {
@@ -78,17 +78,6 @@ export default function AdminManagement() {
           <Input label="Nombre" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Nombre completo" />
           <Input label="Usuario" value={form.username} onChange={(e) => setForm({ ...form, username: e.target.value })} placeholder="Nombre de usuario" />
           <Input label="Contrasena" type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} placeholder="Contrasena" />
-          <div className="space-y-1.5">
-            <label className="block text-sm font-medium text-gray-700">Rol</label>
-            <select
-              value={form.role}
-              onChange={(e) => setForm({ ...form, role: e.target.value })}
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400"
-            >
-              <option value="admin">Admin</option>
-              <option value="superadmin">Super Admin</option>
-            </select>
-          </div>
           {error && <p className="text-sm text-red-500">{error}</p>}
           <Button type="submit" variant="brand" loading={saving}>Crear administrador</Button>
         </form>

@@ -106,13 +106,13 @@ export default function ReservationRow({ reservation, onUpdate }) {
           </div>
         )}
 
-        {reservation.status === 'confirmed' && (
+        {!['cancelled', 'expired', 'rejected'].includes(reservation.status) && (
           <button
             onClick={handleUnblock}
             disabled={loading}
             className="w-full py-2 bg-gray-100 text-gray-600 text-xs font-medium rounded-xl hover:bg-gray-200 disabled:opacity-50 transition-colors"
           >
-            {isBlocked ? 'Desbloquear cupo' : 'Cancelar reserva'}
+            {isBlocked ? 'Desbloquear cupo' : 'Eliminar / Cancelar reserva'}
           </button>
         )}
       </div>
