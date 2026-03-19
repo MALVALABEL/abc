@@ -18,7 +18,10 @@ export default function VenueSection({ venue, matches, userMatchIds }) {
         />
         <div className="absolute inset-0 bg-black/45" />
         <div className="absolute bottom-0 left-0 right-0 p-5">
-          <h3 className="text-2xl font-extrabold text-white drop-shadow-lg">
+          <h3
+            className="text-2xl text-white drop-shadow-lg"
+            style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700 }}
+          >
             {venue.name}
           </h3>
           {venue.schedule && (
