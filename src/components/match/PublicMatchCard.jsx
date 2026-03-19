@@ -9,32 +9,18 @@ export default function PublicMatchCard({ match, isReserved }) {
     <Link
       href={`/partido/${match._id}`}
       className={`block relative bg-white rounded-xl shadow-sm border overflow-hidden card-hover ${
-        isReserved ? 'border-emerald-200 ring-1 ring-emerald-100' : isFull ? 'border-accent-200' : 'border-gray-100'
+        isReserved ? 'border-emerald-200 ring-1 ring-emerald-100' : isFull ? 'border-gray-200 opacity-75' : 'border-gray-100'
       }`}
     >
       {isFull && !isReserved && (
-        <div className="absolute inset-0 pointer-events-none z-10">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rotate-[-8deg]">
-            <div className="border-[2.5px] border-accent-500 rounded-lg px-4 py-1.5 bg-white/85 backdrop-blur-sm">
-              <span
-                className="text-accent-600 text-xs tracking-[0.15em] uppercase whitespace-nowrap block text-center"
-                style={{ fontFamily: "'Playfair Display', serif", fontWeight: 800 }}
-              >
-                Partido Confirmado
-              </span>
-            </div>
-          </div>
-          <div className="absolute -bottom-3 -right-3 rotate-[15deg]">
-            <div className="w-10 h-10 rounded-full border-[1.5px] border-black/60 flex items-center justify-center bg-white/80">
-              <div className="w-8 h-8 rounded-full border-[0.5px] border-black/30 flex items-center justify-center">
-                <span
-                  className="text-[9px] text-black/70 leading-none"
-                  style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700 }}
-                >
-                  ABC
-                </span>
-              </div>
-            </div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rotate-[-18deg] pointer-events-none z-10">
+          <div className="border border-black/50 rounded px-4 py-1.5 bg-white/70 backdrop-blur-sm">
+            <span
+              className="text-black/60 text-xs tracking-[0.15em] uppercase whitespace-nowrap block text-center"
+              style={{ fontFamily: "'Playfair Display', serif", fontWeight: 800 }}
+            >
+              Partido Confirmado
+            </span>
           </div>
         </div>
       )}
