@@ -35,7 +35,7 @@ export default function VenueSection({ venue, matches, userMatchIds }) {
       {hasMatches && (
         <button
           onClick={() => setOpen((prev) => !prev)}
-          className="w-full flex items-center justify-between px-5 py-3 bg-brand-600 hover:bg-brand-700 transition-colors"
+          className="w-full flex items-center justify-between px-5 py-3 bg-accent-500 hover:bg-accent-600 transition-colors"
         >
           <span className="text-sm font-semibold text-white">
             Fechas disponibles ({matches.length})
