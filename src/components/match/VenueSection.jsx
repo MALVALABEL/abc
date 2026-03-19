@@ -10,7 +10,7 @@ export default function VenueSection({ venue, matches, userMatchIds }) {
 
   return (
     <div className="rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-      <div className="relative h-44 sm:h-52">
+      <Link href={`/cancha/${venue._id}`} className="block relative h-44 sm:h-52">
         <img
           src={venue.imageUrl}
           alt={venue.name}
@@ -30,7 +30,7 @@ export default function VenueSection({ venue, matches, userMatchIds }) {
             </p>
           )}
         </div>
-      </div>
+      </Link>
 
       {hasMatches && (
         <button
