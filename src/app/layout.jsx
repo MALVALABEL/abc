@@ -1,4 +1,5 @@
 import './globals.css';
+import WhatsAppBubble from '@/components/ui/WhatsAppBubble';
 
 export const metadata = {
   title: 'Partidos ABC - Reserva tu cupo',
@@ -15,6 +16,7 @@ export default function RootLayout({ children }) {
     <html lang="es">
       <body className="bg-gray-50 min-h-screen antialiased">
         {children}
+        <WhatsAppBubble />
       </body>
     </html>
   );
