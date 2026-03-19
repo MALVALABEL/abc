@@ -155,14 +155,30 @@ function VenueMatchRow({ match, isReserved }) {
 
 function ConfirmedStamp() {
   return (
-    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rotate-[-12deg] pointer-events-none z-10">
-      <div className="border-[3px] border-accent-500 rounded-lg px-5 py-2 bg-white/85 backdrop-blur-sm">
-        <span
-          className="text-accent-600 text-sm tracking-[0.15em] uppercase whitespace-nowrap block text-center"
-          style={{ fontFamily: "'Playfair Display', serif", fontWeight: 800 }}
-        >
-          Partido Confirmado
-        </span>
+    <div className="absolute inset-0 pointer-events-none z-10">
+      {/* Sello partido confirmado */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rotate-[-8deg]">
+        <div className="border-[2.5px] border-accent-500 rounded-lg px-4 py-1.5 bg-white/85 backdrop-blur-sm">
+          <span
+            className="text-accent-600 text-xs tracking-[0.15em] uppercase whitespace-nowrap block text-center"
+            style={{ fontFamily: "'Playfair Display', serif", fontWeight: 800 }}
+          >
+            Partido Confirmado
+          </span>
+        </div>
+      </div>
+      {/* Sello ABC notarial */}
+      <div className="absolute -bottom-3 -right-3 rotate-[15deg]">
+        <div className="w-10 h-10 rounded-full border-[1.5px] border-black/60 flex items-center justify-center bg-white/80">
+          <div className="w-8 h-8 rounded-full border-[0.5px] border-black/30 flex items-center justify-center">
+            <span
+              className="text-[9px] text-black/70 leading-none"
+              style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700 }}
+            >
+              ABC
+            </span>
+          </div>
+        </div>
       </div>
     </div>
   );
