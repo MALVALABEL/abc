@@ -45,7 +45,7 @@ export default function VenueDetail({ venueId }) {
     <div className="min-h-screen bg-gray-50">
       <Header />
       <VenueHero venue={venue} />
-      <section className="max-w-2xl mx-auto px-4 py-8 space-y-4">
+      <section className="max-w-5xl mx-auto px-4 py-8 space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-bold text-brand-600">Fechas de partidos</h2>
           <span className="text-xs text-gray-400">
@@ -56,7 +56,7 @@ export default function VenueDetail({ venueId }) {
         {matches.length === 0 ? (
           <EmptyState />
         ) : (
-          <div className="space-y-4">
+          <div className="grid gap-4 sm:grid-cols-2">
             {matches.map((match) => (
               <VenueMatchCard
                 key={match._id}
@@ -84,7 +84,7 @@ function VenueHero({ venue }) {
       />
       <div className="absolute inset-0 bg-black/50" />
       <div className="absolute bottom-0 left-0 right-0 p-6">
-        <div className="max-w-2xl mx-auto">
+        <div className="max-w-5xl mx-auto">
           <h1
             className="text-3xl sm:text-4xl text-white drop-shadow-lg"
             style={{ fontFamily: "'Playfair Display', serif", fontWeight: 800 }}
