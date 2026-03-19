@@ -8,10 +8,20 @@ export default function PublicMatchCard({ match, isReserved }) {
   return (
     <Link
       href={`/partido/${match._id}`}
-      className={`block bg-white rounded-xl shadow-sm border overflow-hidden card-hover ${
-        isReserved ? 'border-emerald-200 ring-1 ring-emerald-100' : 'border-gray-100'
+      className={`block relative bg-white rounded-xl shadow-sm border overflow-hidden card-hover ${
+        isReserved ? 'border-emerald-200 ring-1 ring-emerald-100' : isFull ? 'border-accent-200' : 'border-gray-100'
       }`}
     >
+      {isFull && !isReserved && (
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rotate-[-12deg] pointer-events-none z-10">
+          <div className="border-[3px] border-accent-500 rounded-lg px-4 py-1.5 bg-white/80 backdrop-blur-sm">
+            <span className="text-accent-600 font-extrabold text-xs tracking-wider uppercase whitespace-nowrap">
+              Partido Confirmado
+            </span>
+          </div>
+        </div>
+      )}
+
       {isReserved && (
         <div className="bg-emerald-50 px-4 py-1.5 flex items-center gap-1.5">
           <svg className="w-3.5 h-3.5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -53,14 +63,14 @@ export default function PublicMatchCard({ match, isReserved }) {
         <div className="space-y-1.5">
           <div className="flex justify-between text-xs">
             <span className="text-gray-400">Cupos</span>
-            <span className={`font-bold ${isFull ? 'text-red-500' : 'text-brand-500'}`}>
-              {isFull ? 'LLENO' : `${match.availableSlots} disponibles`}
+            <span className={`font-bold ${isFull ? 'text-accent-600' : 'text-brand-500'}`}>
+              {isFull ? `${match.maxSlots}/${match.maxSlots} cupos` : `${match.availableSlots} disponibles`}
             </span>
           </div>
           <div className="w-full bg-gray-100 rounded-full h-2">
             <div
               className={`h-2 rounded-full transition-all duration-500 ${
-                isFull ? 'bg-red-400' : percentage > 70 ? 'bg-accent-500' : 'bg-brand-400'
+                isFull ? 'bg-accent-500' : percentage > 70 ? 'bg-accent-500' : 'bg-brand-400'
               }`}
               style={{ width: `${Math.min(percentage, 100)}%` }}
             />
@@ -72,10 +82,10 @@ export default function PublicMatchCard({ match, isReserved }) {
         isReserved
           ? 'bg-emerald-50 text-emerald-600'
           : isFull
-            ? 'bg-gray-100 text-gray-400'
+            ? 'bg-accent-50 text-accent-600'
             : 'gradient-accent text-white'
       }`}>
-        {isReserved ? 'Ver mi reserva' : isFull ? 'Sin cupos disponibles' : 'Reservar cupo'}
+        {isReserved ? 'Ver mi reserva' : isFull ? 'Partido confirmado' : 'Reservar cupo'}
       </div>
     </Link>
   );

@@ -3,7 +3,7 @@ import Match from '@/models/Match';
 export async function createMatch(data) {
   const match = await Match.create({
     title: data.title,
-    date: new Date(data.date),
+    date: new Date(data.date + 'T12:00:00'),
     time: data.time,
     location: data.location || '',
     maxSlots: parseInt(data.maxSlots, 10),

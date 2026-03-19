@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import PublicMatchCard from './PublicMatchCard';
 import Spinner from '@/components/ui/Spinner';
 import { listMatches } from '@/services/matchService';
+import { filterUpcomingMatches } from '@/helpers/dateHelpers';
 
 const DAY_NAMES = ['Domingo', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado'];
 
@@ -28,7 +29,7 @@ export default function PublicMatchList() {
   useEffect(() => {
     listMatches()
       .then((data) => {
-        const open = data.filter((m) => m.status === 'open');
+        const open = filterUpcomingMatches(data);
         open.sort((a, b) => new Date(a.date) - new Date(b.date));
         setMatches(open);
       })

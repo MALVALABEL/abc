@@ -1,5 +1,5 @@
 import Header from '@/components/ui/Header';
-import PublicMatchList from '@/components/match/PublicMatchList';
+import VenueMatchList from '@/components/match/VenueMatchList';
 import HeroSection from '@/components/match/HeroSection';
 
 export default function Home() {
@@ -7,7 +7,7 @@ export default function Home() {
     <div className="min-h-screen bg-gray-50">
       <Header showAdmin />
       <HeroSection />
-      <PublicMatchList />
+      <VenueMatchList />
     </div>
   );
 }

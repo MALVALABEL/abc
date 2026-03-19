@@ -1,14 +1,16 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import { createMatch } from '@/services/matchService';
+import { listVenues } from '@/services/venueService';
 
 export default function CreateMatchForm() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [venues, setVenues] = useState([]);
   const [form, setForm] = useState({
     title: '',
     date: '',
@@ -18,6 +20,10 @@ export default function CreateMatchForm() {
     pricePerSlot: '',
     paymentInfo: '',
   });
+
+  useEffect(() => {
+    listVenues().then(setVenues).catch(() => {});
+  }, []);
 
   const update = (field) => (e) =>
     setForm((prev) => ({ ...prev, [field]: e.target.value }));
@@ -51,12 +57,20 @@ export default function CreateMatchForm() {
             <Input label="Fecha" type="date" value={form.date} onChange={update('date')} required />
             <Input label="Hora" type="time" value={form.time} onChange={update('time')} required />
           </div>
-          <Input
-            label="Ubicacion"
-            value={form.location}
-            onChange={update('location')}
-            placeholder="Ej: Cancha El Estadio"
-          />
+          <div className="space-y-1.5">
+            <label className="block text-sm font-medium text-gray-700">Cancha</label>
+            <select
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent transition-all duration-200 bg-white"
+              value={form.location}
+              onChange={update('location')}
+              required
+            >
+              <option value="">Seleccionar cancha</option>
+              {venues.map((v) => (
+                <option key={v._id} value={v.name}>{v.name}</option>
+              ))}
+            </select>
+          </div>
           <div className="grid grid-cols-2 gap-3">
             <Input
               label="Cupos maximos"
