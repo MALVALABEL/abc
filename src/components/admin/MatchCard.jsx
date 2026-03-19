@@ -41,7 +41,7 @@ export default function MatchCard({ match }) {
               {match.reservedSlots}/{match.maxSlots} cupos
             </span>
             <span className={`font-bold ${isFull ? 'text-red-500' : 'text-brand-500'}`}>
-              {isFull ? 'LLENO' : `${match.availableSlots} libres`}
+              {isFull ? 'Cupos finalizados' : `${match.availableSlots} libres`}
             </span>
           </div>
           <div className="w-full bg-gray-100 rounded-full h-1.5">

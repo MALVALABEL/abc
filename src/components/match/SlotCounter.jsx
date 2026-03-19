@@ -16,8 +16,8 @@ export default function SlotCounter({ match }) {
     <div className="space-y-3">
       <div className="flex justify-between text-sm">
         <span className="text-gray-500">Cupos</span>
-        <span className={`font-bold ${isFull ? 'text-red-500' : 'text-brand-500'}`}>
-          {isFull ? 'LLENO' : `${available} de ${total} disponibles`}
+        <span className={`font-bold ${isFull ? 'text-accent-600' : 'text-brand-500'}`}>
+          {isFull ? 'Cupos finalizados' : `${available} de ${total} disponibles`}
         </span>
       </div>
       <div className="w-full bg-gray-100 rounded-full h-2.5">

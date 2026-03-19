@@ -1,6 +1,7 @@
 import Header from '@/components/ui/Header';
 import VenueMatchList from '@/components/match/VenueMatchList';
 import HeroSection from '@/components/match/HeroSection';
+import ABCFooterSeal from '@/components/ui/ABCFooterSeal';
 
 export default function Home() {
   return (
@@ -8,6 +9,7 @@ export default function Home() {
       <Header showAdmin />
       <HeroSection />
       <VenueMatchList />
+      <ABCFooterSeal />
     </div>
   );
 }
