@@ -1,45 +1,68 @@
 'use client';
+import { useState } from 'react';
 import Link from 'next/link';
 import { formatTime, formatCurrency } from '@/helpers/formatters';
 import { formatMatchDay } from '@/helpers/dateHelpers';
 
 export default function VenueSection({ venue, matches, userMatchIds }) {
+  const [open, setOpen] = useState(false);
+  const hasMatches = matches.length > 0;
+
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-      <div className="relative h-48 sm:h-56">
+    <div
+      className="rounded-2xl shadow-sm border border-gray-100 overflow-hidden cursor-pointer"
+      onClick={() => hasMatches && setOpen((prev) => !prev)}
+    >
+      <div className="relative h-44 sm:h-52">
         <img
           src={venue.imageUrl}
           alt={venue.name}
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-        <div className="absolute bottom-0 left-0 right-0 p-5">
-          <h3 className="text-xl font-extrabold text-white">{venue.name}</h3>
-          {venue.schedule && (
-            <p className="text-sm text-white/70 mt-1 flex items-center gap-1.5">
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        <div className="absolute inset-0 bg-black/45" />
+        <div className="absolute inset-0 flex items-center justify-between px-5">
+          <div>
+            <h3 className="text-2xl font-extrabold text-white drop-shadow-lg">
+              {venue.name}
+            </h3>
+            {venue.schedule && (
+              <p className="text-sm text-white/80 mt-1 flex items-center gap-1.5">
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                {venue.schedule}
+              </p>
+            )}
+            {hasMatches && (
+              <p className="text-xs text-white/60 mt-2">
+                {matches.length} {matches.length === 1 ? 'partido disponible' : 'partidos disponibles'}
+              </p>
+            )}
+          </div>
+          {hasMatches && (
+            <div className={`bg-white/20 backdrop-blur-sm rounded-full p-2 transition-transform duration-300 ${open ? 'rotate-180' : ''}`}>
+              <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
               </svg>
-              {venue.schedule}
-            </p>
+            </div>
           )}
         </div>
       </div>
 
-      <div className="p-4 space-y-3">
-        {matches.length === 0 ? (
-          <p className="text-sm text-gray-400 text-center py-4">
-            No hay partidos programados en esta cancha
-          </p>
-        ) : (
-          matches.map((match) => (
+      <div
+        className={`transition-all duration-300 ease-in-out overflow-hidden ${
+          open ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'
+        }`}
+      >
+        <div className="p-4 space-y-3 bg-white" onClick={(e) => e.stopPropagation()}>
+          {matches.map((match) => (
             <VenueMatchRow
               key={match._id}
               match={match}
               isReserved={userMatchIds.has(match._id)}
             />
-          ))
-        )}
+          ))}
+        </div>
       </div>
     </div>
   );
