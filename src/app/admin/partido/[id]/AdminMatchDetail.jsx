@@ -85,21 +85,18 @@ export default function AdminMatchDetail({ matchId }) {
 
       <ReservationTable matchId={matchId} />
 
-      <div className="bg-red-50 rounded-2xl border border-red-100 p-5 space-y-3">
-        <p className="text-sm font-semibold text-red-700">Zona de peligro</p>
-        <button
-          onClick={async () => {
-            if (!confirm('Seguro que quieres ELIMINAR este partido y todas sus reservas?')) return;
-            setDeleting(true);
-            await fetch(`/api/matches/${matchId}`, { method: 'DELETE' });
-            window.location.href = '/admin';
-          }}
-          disabled={deleting}
-          className="w-full py-2.5 bg-red-500 text-white text-sm font-semibold rounded-xl hover:bg-red-600 disabled:opacity-50 transition-colors"
-        >
-          {deleting ? 'Eliminando...' : 'Eliminar partido completo'}
-        </button>
-      </div>
+      <button
+        onClick={async () => {
+          if (!confirm('Seguro que quieres eliminar este partido y todas sus reservas?')) return;
+          setDeleting(true);
+          await fetch(`/api/matches/${matchId}`, { method: 'DELETE' });
+          window.location.href = '/admin';
+        }}
+        disabled={deleting}
+        className="w-full py-2.5 bg-red-500 text-white text-sm font-semibold rounded-xl hover:bg-red-600 disabled:opacity-50 transition-colors"
+      >
+        {deleting ? 'Eliminando...' : 'Eliminar partido'}
+      </button>
     </div>
   );
 }
