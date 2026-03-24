@@ -79,7 +79,6 @@ export default function VenueSection({ venue, matches, userMatchIds }) {
 
 function VenueMatchRow({ match, isReserved }) {
   const isFull = match.availableSlots <= 0;
-  const percentage = (match.reservedSlots / match.maxSlots) * 100;
   const dayLabel = formatMatchDay(match.date);
 
   return (
@@ -115,11 +114,8 @@ function VenueMatchRow({ match, isReserved }) {
               {formatTime(match.time)}
             </span>
             <span className="text-gray-300">|</span>
-            <span>
-              {isFull
-                ? `${match.maxSlots}/${match.maxSlots} cupos`
-                : `${match.availableSlots} cupos libres`
-              }
+            <span className={isFull ? 'text-gray-400' : 'text-emerald-600'}>
+              {isFull ? 'Completo' : 'Disponible'}
             </span>
           </div>
         </div>
@@ -142,16 +138,6 @@ function VenueMatchRow({ match, isReserved }) {
         </div>
       </div>
 
-      {!isFull && (
-        <div className="mt-2 w-full bg-gray-100 rounded-full h-1.5">
-          <div
-            className={`h-1.5 rounded-full transition-all duration-500 ${
-              percentage > 70 ? 'bg-accent-500' : 'bg-brand-400'
-            }`}
-            style={{ width: `${Math.min(percentage, 100)}%` }}
-          />
-        </div>
-      )}
     </Link>
   );
 }

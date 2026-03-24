@@ -4,7 +4,6 @@ import { formatMatchDay } from '@/helpers/dateHelpers';
 
 export default function VenueMatchCard({ match, isReserved }) {
   const isFull = match.availableSlots <= 0;
-  const percentage = (match.reservedSlots / match.maxSlots) * 100;
   const dayLabel = formatMatchDay(match.date);
 
   return (
@@ -54,24 +53,11 @@ export default function VenueMatchCard({ match, isReserved }) {
           )}
         </div>
 
-        <div className="space-y-2">
-          <div className="flex justify-between text-xs">
-            <span className="text-gray-400">Cupos</span>
-            <span className={`font-bold ${isFull ? 'text-gray-400' : 'text-brand-500'}`}>
-              {isFull
-                ? 'Cupos finalizados'
-                : `${match.availableSlots} de ${match.maxSlots} disponibles`
-              }
-            </span>
-          </div>
-          <div className="w-full bg-gray-100 rounded-full h-2">
-            <div
-              className={`h-2 rounded-full transition-all duration-500 ${
-                isFull ? 'bg-gray-300' : percentage > 70 ? 'bg-accent-500' : 'bg-brand-400'
-              }`}
-              style={{ width: `${Math.min(percentage, 100)}%` }}
-            />
-          </div>
+        <div className="flex items-center gap-1.5">
+          <span className={`w-2 h-2 rounded-full ${isFull ? 'bg-gray-300' : 'bg-emerald-500'}`} />
+          <span className={`text-xs font-semibold ${isFull ? 'text-gray-400' : 'text-emerald-600'}`}>
+            {isFull ? 'Partido completo' : 'Disponible'}
+          </span>
         </div>
       </div>
 
